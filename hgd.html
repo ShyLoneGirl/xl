@@ -1,0 +1,418 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"???o?;}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=jkbYMs6byLBRXsot1XoGVxf5"></script>
+	<script src="audio.min.js"></script>
+	<title>工大导游图</title>
+</head>
+<body>
+<audio id="mus" autoplay style ="width:auto;height:40px"><source src="musi.mp3" type="audio/mpeg"></audio>
+	<div id="allmap">
+		</div>
+</body>
+</html>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+
+
+<script>
+	
+//三个地图控制按钮
+function sxs()
+{
+	if(map.getZoom()>10&&map.getZoom()<20)
+		map.setZoom(map.getZoom()-1);
+	else 
+		map.setZoom(10);
+}
+function fds()
+{
+	if(map.getZoom()>9&&map.getZoom()<19)
+		map.setZoom(map.getZoom()+1);
+	else 
+		map.setZoom(19);
+}
+function gws()
+{
+			map.panTo(sp);
+
+}
+
+//播放暂停方法
+function bf(){
+	if(document.getElementById("bfzt").innerHTML=="播放"&&document.getElementById("mus").paused==true&&document.getElementById("mus").readyState!=0){
+		document.getElementById("mus").play(); 
+		document.getElementById("bfzt").innerHTML="暂停";
+	}
+	else {
+		document.getElementById("mus").pause(); 
+		document.getElementById("bfzt").innerHTML="播放";
+	}
+}
+
+//音频线程
+
+
+
+function adp(){
+	if(document.getElementById("mus").ended==true)
+		document.getElementById("bfzt").innerHTML="播放";
+	if(document.getElementById("mus").readyState!=0){
+
+		document.getElementById("hc").innerHTML="音频就绪";
+	}
+	else 
+		document.getElementById("hc").innerHTML="音频准备中...";
+	
+
+}
+//功能
+//画矩形	
+function drawrec(pStart,pEnd){	
+	var rectangle = new BMap.Polygon([
+		new BMap.Point(pStart.lng,pStart.lat),
+		new BMap.Point(pEnd.lng,pStart.lat),
+		new BMap.Point(pEnd.lng,pEnd.lat),
+		new BMap.Point(pStart.lng,pEnd.lat)
+	], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5,fillColor:"",enableMassClear:false});
+	map.addOverlay(rectangle);         //增加矩形
+}
+
+//在区域否
+function panbie(pStart,pEnd,pset)
+{
+	var c = new BMap.Bounds(pStart,pEnd); //测试Bounds对象
+  var result = BMapLib.GeoUtils.isPointInRect(pset, c);
+	return result;
+}
+
+
+//各种自定义控件添加	
+function zdykj(){
+var blc = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT});// 坐下，添加比例尺
+map.addControl(blc); //比例尺 
+
+
+var sxx = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset:new BMap.Size(10,85)});  
+sxx.addCopyright({id: 1, content: "<button id = 'sxsx' onclick='sxs()' style='width:50px;height:50px;'>缩小</button>"}); 
+map.addControl(sxx); //缩小  
+
+var fdd = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset:new BMap.Size(10,25)});  
+fdd.addCopyright({id: 2, content: "<button id = 'fdfd' onclick='fds()' style='width:50px;height:50px;'>放大</button>"}); 
+map.addControl(fdd); //放大 
+
+ 
+var gw = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT,offset:new BMap.Size(10,30)});  
+gw.addCopyright({id: 3, content: "<button id = 'wzz' onclick='gws()' style='width:48px;height:48px;background-color: transparent;border:0;background-image:url(tb.jpg)'></button>"}); 
+
+
+
+map.addControl(gw); //我的位置  
+
+//var ad = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_TOP_LEFT});  
+//ad.addCopyright({id: 4, content: "		<audio id='mus'  style ='width:auto;height:40px'><source src='welcometohaut.mp3' type='audio/mpeg'></audio>"}); 
+//map.addControl(ad); //播放器  
+
+
+
+var bff = new BMap.CopyrightControl({anchor:  BMAP_ANCHOR_BOTTOM_RIGHT,offset:new BMap.Size(10,145)});  
+bff.addCopyright({id: 5, content: "<button id = 'bfzt' onclick='bf()' style='width:50px;height:50px;'>播放</button>"}); 
+map.addControl(bff); //播放
+
+
+
+var bff = new BMap.CopyrightControl({anchor:  BMAP_ANCHOR_TOP_LEFT});  
+bff.addCopyright({id: 6, content: "<button id = 'hc' disabled = 'true'   style='width:auto;height:30px;background:yellow'>音频准备中...</button>"}); 
+map.addControl(bff); //准备显示 	
+
+
+//添加下拉菜单控件 显示方法在外面
+//var sel = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_TOP_RIGHT});  
+//map.addControl(sel); //选择菜单控件  
+
+
+}
+
+//坐标
+
+
+//坐标
+//	var shauts = new BMap.Point(113.549753,34.834865);
+//	var shaute = new BMap.Point(113.553903,34.83915);
+
+	//坐标
+	var shauts = new BMap.Point(113.630389-0.080636,34.744611+0.090254);
+	var shaute = new BMap.Point(113.634539-0.080636,34.748896+0.090254);
+
+//1中心实验楼
+
+	var s1s = new BMap.Point(113.632114-0.080636,34.746179+0.090254);
+	var s1e = new BMap.Point(113.632626-0.080636,34.746576+0.090254);	
+
+//2教学楼
+	
+	var s2s = new BMap.Point(113.632338-0.080636,34.746639+0.090254);
+	var s2e = new BMap.Point(113.633519-0.080636,34.747035+0.090254);	
+
+//3实验楼
+
+	var s3s = new BMap.Point(113.632307-0.080636,34.745804+0.090254);
+	var s3e = new BMap.Point(113.633506-0.080636,34.746216+0.090254);
+
+
+//4篮球场
+
+	var s4s = new BMap.Point(113.632185-0.080636,34.747061+0.090254);
+	var s4e = new BMap.Point(113.63365-0.080636,34.747651+0.090254);
+
+//5大礼堂
+
+	var s5s = new BMap.Point(113.633668-0.080636,34.746957+0.090254);
+	var s5e = new BMap.Point(113.634166-0.080636,34.747454+0.090254);
+
+//6一餐
+
+ 	var s6s = new BMap.Point(113.632293-0.080636,34.747673+0.090254);
+	var s6e = new BMap.Point(113.63281-0.080636,34.748066+0.090254);
+
+//7三餐
+
+	var s7s = new BMap.Point(113.631642-0.080636,34.74768+0.090254);
+	var s7e = new BMap.Point(113.631844-0.080636,34.748029+0.090254);	
+
+//8体育馆
+
+	var s8s = new BMap.Point(113.631471-0.080636,34.747132+0.090254);
+	var s8e = new BMap.Point(113.632154-0.080636,34.747584+0.090254);
+
+
+
+
+var sp = 1;
+var map = new BMap.Map("allmap");
+var point = new BMap.Point(113.557792,34.836239);
+map.centerAndZoom(point,17);
+zdykj();	
+
+var adplay=setInterval(function(){adp()},500);
+
+
+var sel = new BMap.CopyrightControl({anchor: BMAP_ANCHOR_TOP_RIGHT});  
+xlcd();
+ 
+function xlcd(){
+	return sel.addCopyright({id: 7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='hgd#'>欢迎光临河工大</option><option value='hegongda#'>河南工业大学简介</option></select>"}); 
+	}
+
+
+function qiehuan(selObj)
+{
+//	alert(selObj.options[selObj.selectedIndex].value);
+if(selObj.options[selObj.selectedIndex].value=="1#")
+ 	document.getElementById("mus").src= "1.mp3";  	
+if(selObj.options[selObj.selectedIndex].value=="2#")
+	document.getElementById("mus").src= "2.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="3#")
+	document.getElementById("mus").src= "3.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="4#")
+	document.getElementById("mus").src= "4.mp3"; 			
+if(selObj.options[selObj.selectedIndex].value=="5#")
+	document.getElementById("mus").src= "5.mp3";	 
+if(selObj.options[selObj.selectedIndex].value=="6#")
+	document.getElementById("mus").src= "6.mp3";	 
+if(selObj.options[selObj.selectedIndex].value=="7#")
+	document.getElementById("mus").src= "7.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="8#")
+	document.getElementById("mus").src= "8.mp3";
+if(selObj.options[selObj.selectedIndex].value=="12#")
+	document.getElementById("mus").src= "zhongxinshiyanlou.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="22#")
+	document.getElementById("mus").src= "jiaoxuelou.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="62#")
+	document.getElementById("mus").src= "1can.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="63#")
+	document.getElementById("mus").src= "2can.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="72#")
+	document.getElementById("mus").src= "3can.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="82#")
+	document.getElementById("mus").src= "tiyuguan.mp3"; 	
+if(selObj.options[selObj.selectedIndex].value=="83#")
+	document.getElementById("mus").src= "tiyuchang.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="84#")
+	document.getElementById("mus").src= "xiyubu.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="82#")
+	document.getElementById("mus").src= "kaishuifang.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="hgd#")
+	document.getElementById("mus").src= "welcometohaut.mp3"; 
+if(selObj.options[selObj.selectedIndex].value=="hegongda#")
+	document.getElementById("mus").src= "hgd.mp3"; 
+}
+
+
+
+drawrec(s1s,s1e);
+drawrec(s2s,s2e);
+drawrec(s3s,s3e);
+drawrec(s4s,s4e);
+drawrec(s5s,s5e);
+drawrec(s6s,s6e);
+drawrec(s7s,s7e);
+drawrec(s8s,s8e);
+drawrec(shauts,shaute);
+
+
+var geolocation = new BMap.Geolocation();
+geolocation.getCurrentPosition(function(r){
+	if(this.getStatus() == BMAP_STATUS_SUCCESS){
+		var mk = new BMap.Marker(r.point);
+		map.addOverlay(mk);
+		map.panTo(r.point);
+//	alert('您的位置：'+r.point.lng+','+r.point.lat) 
+		sp = r.point;
+    var  pb = 1;    
+    //at haut
+    if(panbie(shauts,shaute,r.point)== true){
+    	document.getElementById("mus").src= "welcometohaut.mp3"; 
+    	map.addControl(sel); //添加选择菜单控件 
+//  	alert('您的位置：'+r.point.lng+','+r.point.lat);
+			var myVar=setInterval(function(){myTimer()},8000);
+			function myTimer(){
+				var ge = new BMap.Geolocation();
+				ge.getCurrentPosition(function(r){
+					if(this.getStatus() == BMAP_STATUS_SUCCESS){
+					var mk = new BMap.Marker(r.point);
+					map.clearOverlays();
+			    map.addOverlay(mk);
+			    		    
+
+			    if(panbie(s1s,s1e,r.point)== true){
+// 				   alert("欢迎来到1");     				       
+ 				      if(pb != 11){
+ 				       		document.getElementById("mus").src= "1.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='1#'>中心实验楼</option><option value='12#'>简介</option></select>"});  				       		
+ 				       		pb =11;
+ 				       		}
+ 				  }
+
+			     else if(panbie(s2s,s2e,r.point)== true){
+ 				//   alert("欢迎来到2");     				       
+ 				      if(pb != 22){
+							document.getElementById("mus").src= "2.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='2#'>欢迎来到教学楼</option><option value='22#'>简介</option></select>"});  				       		
+ 				       		pb =22;
+ 				       		}
+ 				  }
+
+			     else if(panbie(s3s,s3e,r.point)== true){
+// 				   alert("欢迎来到三号楼");     				       
+ 				      if(pb != 33){
+ 				       		document.getElementById("mus").src= "3.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='3#'>欢迎来到实验楼</option></select>"});  				       		
+ 				       		pb =33;
+ 				       		}
+ 				  }
+	       
+			     else if(panbie(s4s,s4e,r.point)== true){
+// 				   alert("欢迎来到4");     				       
+ 				      if(pb != 44){
+ 				       		document.getElementById("mus").src= "4.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='4#'>欢迎来到篮球场</option></select>"});  				       		
+ 				       		pb =44;
+ 				       		}
+ 				  }
+
+
+			     else if(panbie(s5s,s5e,r.point)== true){
+// 				   alert("欢迎来到5");     				       
+ 				      if(pb != 55){
+ 				       		document.getElementById("mus").src= "5.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='5#'>大礼堂</option></select>"});  				       		
+ 				       		pb =55;
+ 				       		}
+ 				  }    	
+ 
+ 
+			     else if(panbie(s6s,s6e,r.point)== true){
+// 				   alert("欢迎来到三号楼");     				       
+ 				      if(pb != 66){
+ 				       		document.getElementById("mus").src= "6.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='6#'>欢迎来到一餐</option><option value='62#'>一餐</option><option value='63#'>二餐</option></select>"});  				       		
+ 				       		pb =66;
+ 				       		}
+ 				  } 
+ 
+ 
+ 
+ 
+			     else if(panbie(s7s,s7e,r.point)== true){
+// 				   alert("欢迎来到9号楼");     				       
+ 				      if(pb != 77){
+ 				       		document.getElementById("mus").src= "7.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='7#'>欢迎来到三餐</option><option value='72#'>简介</option></select>"});  				       		
+ 				       		pb =77;
+ 				       		}
+ 				  } 
+ 
+ 
+			     else if(panbie(s8s,s8e,r.point)== true){
+// 				   alert("欢迎来到17号楼");     				       
+ 				      if(pb != 88){
+ 				       		document.getElementById("mus").src= "8.mp3"; 
+							document.getElementById("bfzt").innerHTML="暂停";
+		    					sel.addCopyright({id:7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='8#'>欢迎来到体育馆</option><option value='82#'>体育馆</option><option value='83#'>体育场</option><option value='84#'>洗浴部</option><option value='84#'>开水房</option></select>"});  				       		
+ 				       		pb =88;
+ 				       		}
+ 				  } 
+ 
+ 	        else
+ 	        	{
+ 	        		if(pb!=3){
+ 	        		document.getElementById("mus").src= "welcometohaut.mp3";
+					document.getElementById("bfzt").innerHTML="暂停";
+ 	        		sel.addCopyright({id: 7, content: "<select id = 'sele' name='music' onchange='qiehuan(this)' style = 'width:120px;height:40px'><option value='hgd#'>欢迎光临河工大</option><option value='hegongda#'>河南工业大学简介</option></select>"}); 
+ 	        	pb=3}
+ 	        		}
+ 				      				       	
+} 
+ 				    	
+ 					else {
+ 						alert('failed'+this.getStatus());
+ 					}        
+ 				},{enableHighAccuracy: true})
+ 				       			}
+ 		}
+
+
+ 	else  {
+ 		alert("您已不在河南工业大学");
+ 	}      
+
+
+
+	
+ 	}
+
+ 	else  {
+ 		alert('failed'+this.getStatus());
+ 	}        
+},{enableHighAccuracy: true})
+					
+					
+</script>
+
+
+
+
+
+
